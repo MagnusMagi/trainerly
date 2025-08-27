@@ -11,9 +11,18 @@ protocol DependencyContainer {
     var workoutRepository: WorkoutRepositoryProtocol { get }
     var userRepository: UserRepositoryProtocol { get }
     
-    // Feature Services
+    // Phase 2: Core Fitness Features
+    var aiWorkoutGenerator: AIWorkoutGeneratorProtocol { get }
     var formAnalysisService: FormAnalysisServiceProtocol { get }
+    var workoutTrackingService: WorkoutTrackingServiceProtocol { get }
+    var exerciseLibraryService: ExerciseLibraryServiceProtocol { get }
+    var progressAnalyticsService: ProgressAnalyticsServiceProtocol { get }
+    
+    // Phase 3: AI & Gamification
     var gamificationService: GamificationServiceProtocol { get }
+    var socialFeaturesService: SocialFeaturesServiceProtocol { get }
+    
+    // Feature Services
     var paymentService: PaymentServiceProtocol { get }
     var notificationService: NotificationServiceProtocol { get }
     
@@ -62,7 +71,15 @@ final class MainDependencyContainer: DependencyContainer {
         )
     }()
     
-    // MARK: - Feature Services
+    // MARK: - Phase 2: Core Fitness Features
+    lazy var aiWorkoutGenerator: AIWorkoutGeneratorProtocol = {
+        AIWorkoutGenerator(
+            openAIService: openAIService,
+            exerciseLibrary: exerciseLibraryService,
+            userRepository: userRepository
+        )
+    }()
+    
     lazy var formAnalysisService: FormAnalysisServiceProtocol = {
         FormAnalysisService(
             visionProcessor: visionProcessor,
@@ -70,6 +87,54 @@ final class MainDependencyContainer: DependencyContainer {
         )
     }()
     
+    lazy var workoutTrackingService: WorkoutTrackingServiceProtocol = {
+        WorkoutTrackingService(
+            healthKitManager: healthKitManager,
+            workoutRepository: workoutRepository,
+            formAnalysisService: formAnalysisService
+        )
+    }()
+    
+    lazy var exerciseLibraryService: ExerciseLibraryServiceProtocol = {
+        ExerciseLibraryService(
+            exerciseRepository: exerciseRepository,
+            aiWorkoutGenerator: aiWorkoutGenerator,
+            userRepository: userRepository,
+            cacheService: cacheService
+        )
+    }()
+    
+    lazy var progressAnalyticsService: ProgressAnalyticsServiceProtocol = {
+        ProgressAnalyticsService(
+            workoutRepository: workoutRepository,
+            userRepository: userRepository,
+            healthKitManager: healthKitManager,
+            aiWorkoutGenerator: aiWorkoutGenerator,
+            coreDataStack: coreDataStack
+        )
+    }()
+    
+    // MARK: - Phase 3: AI & Gamification
+    lazy var gamificationService: GamificationServiceProtocol = {
+        GamificationService(
+            userRepository: userRepository,
+            workoutRepository: workoutRepository,
+            progressAnalyticsService: progressAnalyticsService,
+            cacheService: cacheService
+        )
+    }()
+    
+    lazy var socialFeaturesService: SocialFeaturesServiceProtocol = {
+        SocialFeaturesService(
+            userRepository: userRepository,
+            workoutRepository: workoutRepository,
+            gamificationService: gamificationService,
+            notificationService: notificationService,
+            cacheService: cacheService
+        )
+    }()
+    
+    // MARK: - Feature Services
     lazy var gamificationService: GamificationServiceProtocol = {
         GamificationService(
             userRepository: userRepository,
@@ -198,11 +263,15 @@ final class MainDependencyContainer: DependencyContainer {
     }()
     
     private lazy var coreDataStack: CoreDataStackProtocol = {
-        CoreDataStack()
+        CoreDataStack.shared
     }()
     
     private lazy var networkMonitor: NetworkMonitorProtocol = {
         NetworkMonitor()
+    }()
+    
+    private lazy var exerciseRepository: ExerciseRepositoryProtocol = {
+        ExerciseRepository()
     }()
     
     // MARK: - Initialization
@@ -221,16 +290,33 @@ final class MainDependencyContainer: DependencyContainer {
 
 // MARK: - Service Protocols (Placeholders - will be implemented next)
 protocol NetworkServiceProtocol {}
-protocol HealthKitManagerProtocol {}
+protocol HealthKitManagerProtocol {
+    func requestAuthorization() // Added for setupServices()
+}
 protocol AICoachServiceProtocol {}
 protocol SupabaseClientProtocol {}
 protocol WorkoutRepositoryProtocol {}
 protocol UserRepositoryProtocol {}
+
+// Phase 2: Core Fitness Features
+protocol AIWorkoutGeneratorProtocol {}
 protocol FormAnalysisServiceProtocol {}
+protocol WorkoutTrackingServiceProtocol {}
+protocol ExerciseLibraryServiceProtocol {}
+protocol ProgressAnalyticsServiceProtocol {}
+
+// Phase 3: AI & Gamification
 protocol GamificationServiceProtocol {}
+protocol SocialFeaturesServiceProtocol {}
+
+// Feature Services
 protocol PaymentServiceProtocol {}
-protocol NotificationServiceProtocol {}
-protocol AnalyticsServiceProtocol {}
+protocol NotificationServiceProtocol {
+    func requestPermissions() // Added for setupServices()
+}
+protocol AnalyticsServiceProtocol {
+    func configure() // Added for setupServices()
+}
 protocol StorageServiceProtocol {}
 protocol CacheServiceProtocol {}
 
@@ -256,3 +342,4 @@ protocol MemoryCacheProtocol {}
 protocol DiskCacheProtocol {}
 protocol CoreDataStackProtocol {}
 protocol NetworkMonitorProtocol {}
+protocol ExerciseRepositoryProtocol {}

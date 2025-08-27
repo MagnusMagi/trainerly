@@ -9,7 +9,7 @@ protocol HealthKitManagerProtocol: ObservableObject {
     var authorizationStatus: HKAuthorizationStatus { get }
     var isAuthorized: Bool { get }
     
-    func requestAuthorization() async throws
+    func requestAuthorization() // Made non-async for dependency container setup
     func startWorkoutSession(type: HKWorkoutActivityType) -> HKWorkoutSession?
     func endWorkoutSession(_ session: HKWorkoutSession, with summary: WorkoutSummary)
     func fetchTodayStats() async throws -> HealthStats
@@ -24,7 +24,6 @@ final class HealthKitManager: NSObject, HealthKitManagerProtocol {
     @Published var isHealthKitAvailable: Bool = false
     @Published var authorizationStatus: HKAuthorizationStatus = .notDetermined
     @Published var isAuthorized: Bool = false
-    @Published var currentWorkoutSession: HKWorkoutSession?
     
     // MARK: - Private Properties
     private let healthStore = HKHealthStore()
@@ -86,7 +85,20 @@ final class HealthKitManager: NSObject, HealthKitManagerProtocol {
     }
     
     // MARK: - Authorization
-    func requestAuthorization() async throws {
+    func requestAuthorization() {
+        // This is called during dependency container setup
+        // For now, just check if HealthKit is available
+        // Actual authorization will be requested when needed
+        Task {
+            do {
+                try await performAuthorizationRequest()
+            } catch {
+                print("❌ HealthKit authorization failed: \(error)")
+            }
+        }
+    }
+    
+    private func performAuthorizationRequest() async throws {
         guard isHealthKitAvailable else {
             throw HealthKitError.notAvailable
         }

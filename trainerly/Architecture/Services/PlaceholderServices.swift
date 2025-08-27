@@ -68,6 +68,23 @@ final class GamificationService: GamificationServiceProtocol {
     }
 }
 
+// MARK: - Social Features Service
+final class SocialFeaturesService: SocialFeaturesServiceProtocol {
+    private let userRepository: UserRepositoryProtocol
+    private let workoutRepository: WorkoutRepositoryProtocol
+    private let gamificationService: GamificationServiceProtocol
+    private let notificationService: NotificationServiceProtocol
+    private let cacheService: CacheServiceProtocol
+    
+    init(userRepository: UserRepositoryProtocol, workoutRepository: WorkoutRepositoryProtocol, gamificationService: GamificationServiceProtocol, notificationService: NotificationServiceProtocol, cacheService: CacheServiceProtocol) {
+        self.userRepository = userRepository
+        self.workoutRepository = workoutRepository
+        self.gamificationService = gamificationService
+        self.notificationService = notificationService
+        self.cacheService = cacheService
+    }
+}
+
 // MARK: - Payment Service
 final class PaymentService: PaymentServiceProtocol {
     private let stripeService: StripeServiceProtocol
@@ -88,6 +105,10 @@ final class NotificationService: NotificationServiceProtocol {
         self.pushNotificationService = pushNotificationService
         self.localNotificationService = localNotificationService
     }
+    
+    func requestPermissions() {
+        // Placeholder implementation
+    }
 }
 
 // MARK: - Analytics Service
@@ -98,6 +119,10 @@ final class AnalyticsService: AnalyticsServiceProtocol {
     init(firebaseService: FirebaseServiceProtocol, mixpanelService: MixpanelServiceProtocol) {
         self.firebaseService = firebaseService
         self.mixpanelService = mixpanelService
+    }
+    
+    func configure() {
+        // Placeholder implementation
     }
 }
 
@@ -266,5 +291,10 @@ final class DiskCache: DiskCacheProtocol {
 
 // MARK: - Network Monitor
 final class NetworkMonitor: NetworkMonitorProtocol {
+    // Placeholder implementation
+}
+
+// MARK: - Exercise Repository
+final class ExerciseRepository: ExerciseRepositoryProtocol {
     // Placeholder implementation
 }

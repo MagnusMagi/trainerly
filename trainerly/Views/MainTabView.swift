@@ -1,5 +1,8 @@
 import SwiftUI
 
+// Import the new views
+@_exported import class UIKit.UIImage
+
 // MARK: - Main Tab View
 struct MainTabView: View {
     
@@ -31,6 +34,14 @@ struct MainTabView: View {
                 }
                 .tag(Tab.workouts)
             
+            // AI Coach Tab
+            AICoachChatView()
+                .tabItem {
+                    Image(systemName: "brain.head.profile")
+                    Text("AI Coach")
+                }
+                .tag(Tab.aiCoach)
+            
             // Progress Tab
             ProgressView(coordinator: coordinator.createProgressCoordinator())
                 .tabItem {
@@ -38,6 +49,14 @@ struct MainTabView: View {
                     Text("Progress")
                 }
                 .tag(Tab.progress)
+            
+            // Gamification Tab
+            GamificationDashboardView()
+                .tabItem {
+                    Image(systemName: "trophy.fill")
+                    Text("Gamification")
+                }
+                .tag(Tab.gamification)
             
             // Social Tab
             SocialView(coordinator: coordinator.createSocialCoordinator())
@@ -88,9 +107,11 @@ struct MainTabView: View {
 enum Tab: Int, CaseIterable {
     case home = 0
     case workouts = 1
-    case progress = 2
-    case social = 3
-    case profile = 4
+    case aiCoach = 2
+    case progress = 3
+    case gamification = 4
+    case social = 5
+    case profile = 6
 }
 
 // MARK: - Placeholder Views (will be implemented next)
