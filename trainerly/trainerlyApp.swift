@@ -6,27 +6,53 @@
 //
 
 import SwiftUI
-import SwiftData
 
 @main
 struct trainerlyApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
-
+    
+    // MARK: - Properties
+    @StateObject private var dependencyContainer = MainDependencyContainer()
+    @StateObject private var appCoordinator: AppCoordinator
+    
+    // MARK: - Initialization
+    init() {
+        let container = MainDependencyContainer()
+        self._dependencyContainer = StateObject(wrappedValue: container)
+        self._appCoordinator = StateObject(wrappedValue: AppCoordinator(dependencyContainer: container))
+    }
+    
+    // MARK: - Body
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(dependencyContainer)
+                .environmentObject(appCoordinator)
+                .onAppear {
+                    // Start the app coordinator
+                    appCoordinator.start()
+                }
         }
-        .modelContainer(sharedModelContainer)
+    }
+}
+
+// MARK: - Content View
+struct ContentView: View {
+    @EnvironmentObject var appCoordinator: AppCoordinator
+    
+    var body: some View {
+        // The coordinator will handle the main view presentation
+        // This is just a placeholder until the coordinator takes over
+        VStack {
+            Text("Trainerly")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+            
+            Text("Loading...")
+                .foregroundColor(.secondary)
+        }
+        .onAppear {
+            // The coordinator should have already started and presented the main view
+            // This is just a fallback
+        }
     }
 }
