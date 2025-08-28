@@ -18,9 +18,37 @@ protocol DependencyContainer {
     var exerciseLibraryService: ExerciseLibraryServiceProtocol { get }
     var progressAnalyticsService: ProgressAnalyticsServiceProtocol { get }
     
-    // Phase 3: AI & Gamification
-    var gamificationService: GamificationServiceProtocol { get }
-    var socialFeaturesService: SocialFeaturesServiceProtocol { get }
+               // Phase 3: AI & Gamification
+           var gamificationService: GamificationServiceProtocol { get }
+           var socialFeaturesService: SocialFeaturesServiceProtocol { get }
+           
+           // Phase 4: Advanced Analytics & Machine Learning
+           var analyticsEngine: AnalyticsEngineProtocol { get }
+           var predictionService: PredictionServiceProtocol { get }
+           var correlationService: CorrelationServiceProtocol { get }
+               var mlModelManager: MLModelManagerProtocol { get }
+    var personalizationEngine: PersonalizationEngineProtocol { get }
+    var formImprovementPredictor: FormImprovementPredictorProtocol { get }
+    var healthIntelligenceService: HealthIntelligenceServiceProtocol { get }
+    var performanceOptimizationService: PerformanceOptimizationServiceProtocol { get }
+    var advancedFeaturesService: AdvancedFeaturesServiceProtocol { get }
+    var testingService: TestingServiceProtocol { get }
+    var uiPolishService: UIPolishServiceProtocol { get }
+    var realMLModelManager: RealMLModelManagerProtocol { get }
+    var mlTrainingService: MLTrainingServiceProtocol { get }
+    var advancedMLFeaturesService: AdvancedMLFeaturesServiceProtocol { get }
+    var advancedAICoachingService: AdvancedAICoachingServiceProtocol { get }
+    var aiModelMarketplaceService: AIModelMarketplaceServiceProtocol { get }
+    var quantumMLService: QuantumMLServiceProtocol { get }
+    var brainComputerInterfaceService: BrainComputerInterfaceServiceProtocol { get }
+    var globalAIModelHubService: GlobalAIModelHubServiceProtocol { get }
+    var quantumBrainInterfaceService: QuantumBrainInterfaceServiceProtocol { get }
+    var multidimensionalFitnessService: MultidimensionalFitnessServiceProtocol { get }
+    var universalAIConsciousnessService: UniversalAIConsciousnessServiceProtocol { get }
+    var cosmicFitnessService: CosmicFitnessServiceProtocol { get }
+    var multiversalFitnessService: MultiversalFitnessServiceProtocol { get }
+    var deploymentService: DeploymentServiceProtocol { get }
+    var evolutionService: EvolutionServiceProtocol { get }
     
     // Feature Services
     var paymentService: PaymentServiceProtocol { get }
@@ -124,13 +152,220 @@ final class MainDependencyContainer: DependencyContainer {
         )
     }()
     
-    lazy var socialFeaturesService: SocialFeaturesServiceProtocol = {
-        SocialFeaturesService(
+               lazy var socialFeaturesService: SocialFeaturesServiceProtocol = {
+               SocialFeaturesService(
+                   userRepository: userRepository,
+                   workoutRepository: workoutRepository,
+                   gamificationService: gamificationService,
+                   notificationService: notificationService,
+                   cacheService: cacheService
+               )
+           }()
+           
+           // MARK: - Phase 4: Advanced Analytics & Machine Learning
+           lazy var analyticsEngine: AnalyticsEngineProtocol = {
+               AnalyticsEngine(
+                   progressAnalyticsService: progressAnalyticsService,
+                   workoutRepository: workoutRepository,
+                   userRepository: userRepository,
+                   healthKitManager: healthKitManager,
+                   aiWorkoutGenerator: aiWorkoutGenerator,
+                   cacheService: cacheService
+               )
+           }()
+           
+           lazy var predictionService: PredictionServiceProtocol = {
+               PredictionService(
+                   analyticsEngine: analyticsEngine,
+                   workoutRepository: workoutRepository,
+                   userRepository: userRepository,
+                   healthKitManager: healthKitManager,
+                   progressAnalyticsService: progressAnalyticsService,
+                   cacheService: cacheService
+               )
+           }()
+           
+           lazy var correlationService: CorrelationServiceProtocol = {
+               CorrelationService(
+                   analyticsEngine: analyticsEngine,
+                   workoutRepository: workoutRepository,
+                   userRepository: userRepository,
+                   healthKitManager: healthKitManager,
+                   progressAnalyticsService: progressAnalyticsService,
+                   cacheService: cacheService
+               )
+           }()
+           
+           lazy var mlModelManager: MLModelManagerProtocol = {
+               MLModelManager(cacheService: cacheService)
+           }()
+           
+               lazy var personalizationEngine: PersonalizationEngineProtocol = {
+        PersonalizationEngine(
+            mlModelManager: mlModelManager,
+            analyticsEngine: analyticsEngine,
+            workoutRepository: workoutRepository,
+            userRepository: userRepository,
+            healthKitManager: healthKitManager,
+            progressAnalyticsService: progressAnalyticsService,
+            cacheService: cacheService
+        )
+    }()
+    
+    lazy var formImprovementPredictor: FormImprovementPredictorProtocol = {
+        FormImprovementPredictor(
+            mlModelManager: mlModelManager,
+            formAnalysisService: formAnalysisService,
+            workoutRepository: workoutRepository,
+            userRepository: userRepository,
+            cacheService: cacheService
+        )
+    }()
+    
+    lazy var healthIntelligenceService: HealthIntelligenceServiceProtocol = {
+        HealthIntelligenceService(
+            healthKitManager: healthKitManager,
+            mlModelManager: mlModelManager,
+            analyticsEngine: analyticsEngine,
             userRepository: userRepository,
             workoutRepository: workoutRepository,
-            gamificationService: gamificationService,
-            notificationService: notificationService,
             cacheService: cacheService
+        )
+    }()
+    
+    lazy var performanceOptimizationService: PerformanceOptimizationServiceProtocol = {
+        PerformanceOptimizationService(
+            mlModelManager: mlModelManager,
+            cacheService: cacheService
+        )
+    }()
+    
+    lazy var advancedFeaturesService: AdvancedFeaturesServiceProtocol = {
+        AdvancedFeaturesService(
+            mlModelManager: mlModelManager,
+            personalizationEngine: personalizationEngine,
+            healthIntelligenceService: healthIntelligenceService,
+            workoutRepository: workoutRepository,
+            userRepository: userRepository,
+            cacheService: cacheService
+        )
+    }()
+    
+    lazy var testingService: TestingServiceProtocol = {
+        TestingService(
+            performanceService: performanceOptimizationService,
+            mlModelManager: mlModelManager,
+            healthKitManager: healthKitManager,
+            cacheService: cacheService
+        )
+    }()
+    
+    lazy var uiPolishService: UIPolishServiceProtocol = {
+        UIPolishService(
+            performanceService: performanceOptimizationService,
+            testingService: testingService
+        )
+    }()
+    
+    lazy var realMLModelManager: RealMLModelManagerProtocol = {
+        RealMLModelManager()
+    }()
+    
+    lazy var mlTrainingService: MLTrainingServiceProtocol = {
+        MLTrainingService(
+            realMLModelManager: realMLModelManager,
+            dataCollectionService: dataCollectionService
+        )
+    }()
+    
+    lazy var advancedMLFeaturesService: AdvancedMLFeaturesServiceProtocol = {
+        AdvancedMLFeaturesService(
+            realMLModelManager: realMLModelManager,
+            mlTrainingService: mlTrainingService
+        )
+    }()
+    
+    lazy var advancedAICoachingService: AdvancedAICoachingServiceProtocol = {
+        AdvancedAICoachingService(
+            advancedMLFeatures: advancedMLFeaturesService,
+            realMLModelManager: realMLModelManager
+        )
+    }()
+    
+    lazy var aiModelMarketplaceService: AIModelMarketplaceServiceProtocol = {
+        AIModelMarketplaceService(
+            realMLModelManager: realMLModelManager,
+            mlTrainingService: mlTrainingService
+        )
+    }()
+    
+    lazy var quantumMLService: QuantumMLServiceProtocol = {
+        QuantumMLService(
+            realMLModelManager: realMLModelManager,
+            advancedMLFeatures: advancedMLFeaturesService
+        )
+    }()
+    
+    lazy var brainComputerInterfaceService: BrainComputerInterfaceServiceProtocol = {
+        BrainComputerInterfaceService(
+            quantumMLService: quantumMLService,
+            advancedMLFeatures: advancedMLFeaturesService
+        )
+    }()
+    
+    lazy var globalAIModelHubService: GlobalAIModelHubServiceProtocol = {
+        GlobalAIModelHubService(
+            quantumMLService: quantumMLService,
+            bciService: brainComputerInterfaceService
+        )
+    }()
+    
+    lazy var quantumBrainInterfaceService: QuantumBrainInterfaceServiceProtocol = {
+        QuantumBrainInterfaceService(
+            quantumMLService: quantumMLService,
+            advancedMLFeatures: advancedMLFeaturesService
+        )
+    }()
+    
+    lazy var multidimensionalFitnessService: MultidimensionalFitnessServiceProtocol = {
+        MultidimensionalFitnessService(
+            quantumBrainService: quantumBrainInterfaceService,
+            globalHubService: globalAIModelHubService
+        )
+    }()
+    
+    lazy var universalAIConsciousnessService: UniversalAIConsciousnessServiceProtocol = {
+        UniversalAIConsciousnessService(
+            quantumBrainService: quantumBrainInterfaceService,
+            multidimensionalService: multidimensionalFitnessService
+        )
+    }()
+    
+    lazy var cosmicFitnessService: CosmicFitnessServiceProtocol = {
+        CosmicFitnessService(
+            universalConsciousnessService: universalAIConsciousnessService,
+            quantumBrainService: quantumBrainInterfaceService
+        )
+    }()
+    
+    lazy var multiversalFitnessService: MultiversalFitnessServiceProtocol = {
+        MultiversalFitnessService(
+            cosmicFitnessService: cosmicFitnessService,
+            universalConsciousnessService: universalAIConsciousnessService
+        )
+    }()
+    
+    lazy var deploymentService: DeploymentServiceProtocol = {
+        DeploymentService(
+            multiversalService: multiversalFitnessService,
+            cosmicService: cosmicFitnessService
+        )
+    }()
+    
+    lazy var evolutionService: EvolutionServiceProtocol = {
+        EvolutionService(
+            deploymentService: deploymentService,
+            multiversalService: multiversalFitnessService
         )
     }()
     
@@ -305,9 +540,37 @@ protocol WorkoutTrackingServiceProtocol {}
 protocol ExerciseLibraryServiceProtocol {}
 protocol ProgressAnalyticsServiceProtocol {}
 
-// Phase 3: AI & Gamification
-protocol GamificationServiceProtocol {}
-protocol SocialFeaturesServiceProtocol {}
+       // Phase 3: AI & Gamification
+       protocol GamificationServiceProtocol {}
+       protocol SocialFeaturesServiceProtocol {}
+       
+       // Phase 4: Advanced Analytics & Machine Learning
+       protocol AnalyticsEngineProtocol {}
+       protocol PredictionServiceProtocol {}
+protocol CorrelationServiceProtocol {}
+protocol MLModelManagerProtocol {}
+protocol PersonalizationEngineProtocol {}
+protocol FormImprovementPredictorProtocol {}
+protocol HealthIntelligenceServiceProtocol {}
+protocol PerformanceOptimizationServiceProtocol {}
+protocol AdvancedFeaturesServiceProtocol {}
+protocol TestingServiceProtocol {}
+protocol UIPolishServiceProtocol {}
+protocol RealMLModelManagerProtocol {}
+protocol MLTrainingServiceProtocol {}
+protocol AdvancedMLFeaturesServiceProtocol {}
+protocol AdvancedAICoachingServiceProtocol {}
+protocol AIModelMarketplaceServiceProtocol {}
+protocol QuantumMLServiceProtocol {}
+protocol BrainComputerInterfaceServiceProtocol {}
+protocol GlobalAIModelHubServiceProtocol {}
+protocol QuantumBrainInterfaceServiceProtocol {}
+protocol MultidimensionalFitnessServiceProtocol {}
+protocol UniversalAIConsciousnessServiceProtocol {}
+protocol CosmicFitnessServiceProtocol {}
+protocol MultiversalFitnessServiceProtocol {}
+protocol DeploymentServiceProtocol {}
+protocol EvolutionServiceProtocol {}
 
 // Feature Services
 protocol PaymentServiceProtocol {}

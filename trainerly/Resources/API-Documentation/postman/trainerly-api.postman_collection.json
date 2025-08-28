@@ -1,0 +1,519 @@
+{
+  "info": {
+    "name": "Trainerly API",
+    "description": "Complete API collection for Trainerly - AI-powered fitness platform",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.trainerly.eu/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "workoutId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "User Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"securepassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "        pm.collectionVariables.set('userId', response.data.user.id);",
+                  "        console.log('Token saved:', response.data.accessToken);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "User Registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"securepassword123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"fitnessLevel\": \"beginner\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Workouts",
+      "item": [
+        {
+          "name": "Get User Workouts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workouts?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["workouts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "type",
+                  "value": "strength",
+                  "disabled": true
+                },
+                {
+                  "key": "difficulty",
+                  "value": "intermediate",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Custom Workout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Custom Upper Body\",\n  \"type\": \"strength\",\n  \"difficulty\": \"intermediate\",\n  \"duration\": 45,\n  \"exercises\": [\n    {\n      \"name\": \"Push-ups\",\n      \"sets\": 3,\n      \"reps\": 15,\n      \"restTime\": 60\n    },\n    {\n      \"name\": \"Dumbbell Rows\",\n      \"sets\": 3,\n      \"reps\": 12,\n      \"restTime\": 90\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workouts",
+              "host": ["{{baseUrl}}"],
+              "path": ["workouts"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.id) {",
+                  "        pm.collectionVariables.set('workoutId', response.data.id);",
+                  "        console.log('Workout ID saved:', response.data.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Generate AI Workout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"workoutType\": \"strength\",\n  \"duration\": 60,\n  \"difficulty\": \"intermediate\",\n  \"equipment\": [\"dumbbells\", \"bench\", \"resistance_bands\"],\n  \"targetMuscles\": [\"chest\", \"shoulders\", \"triceps\"],\n  \"energyLevel\": 7,\n  \"timeOfDay\": \"morning\",\n  \"location\": \"gym\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workouts/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["workouts", "generate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Workout by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workouts/{{workoutId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["workouts", "{{workoutId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Workout",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Upper Body\",\n  \"duration\": 50,\n  \"exercises\": [\n    {\n      \"name\": \"Push-ups\",\n      \"sets\": 4,\n      \"reps\": 20,\n      \"restTime\": 60\n    },\n    {\n      \"name\": \"Dumbbell Rows\",\n      \"sets\": 4,\n      \"reps\": 15,\n      \"restTime\": 90\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workouts/{{workoutId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["workouts", "{{workoutId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Start Workout Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location\": \"gym\",\n  \"notes\": \"Feeling strong today!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workouts/{{workoutId}}/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["workouts", "{{workoutId}}", "start"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Workout",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workouts/{{workoutId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["workouts", "{{workoutId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Sync Health Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"data\": {\n    \"steps\": 8500,\n    \"calories\": 450,\n    \"heartRate\": 72,\n    \"sleepHours\": 7.5,\n    \"weight\": 70.5,\n    \"timestamp\": \"2024-01-01T10:00:00Z\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/health/sync",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "sync"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI Coach",
+      "item": [
+        {
+          "name": "AI Coach Chat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"message\": \"I'm feeling tired today but want to work out. What should I do?\",\n  \"context\": {\n    \"mood\": \"tired\",\n    \"energyLevel\": 4\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/coach",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "coach"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Social",
+      "item": [
+        {
+          "name": "Get Challenges",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/challenges",
+              "host": ["{{baseUrl}}"],
+              "path": ["challenges"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Leaderboards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaderboards?type=global&timeframe=weekly",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaderboards"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "global"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "weekly"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Testing",
+      "item": [
+        {
+          "name": "Test Rate Limiting",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"workoutType\": \"strength\",\n  \"duration\": 30\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workouts/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["workouts", "generate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Invalid Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token_here"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/workouts",
+              "host": ["{{baseUrl}}"],
+              "path": ["workouts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Validation Error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invalid-email\",\n  \"password\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set default headers for all requests",
+          "pm.request.headers.add({",
+          "    key: 'X-API-Version',",
+          "    value: 'v1'",
+          "    disabled: false",
+          "    description: 'API version'",
+          "});",
+          "",
+          "// Log request details in development",
+          "if (pm.environment.get('NODE_ENV') === 'development') {",
+          "    console.log('Request:', pm.request.method, pm.request.url);",
+          "    console.log('Headers:', pm.request.headers);",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Common test functions",
+          "pm.test('Response time is less than 500ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(500);",
+          "});",
+          "",
+          "pm.test('Response has valid JSON', function () {",
+          "    pm.response.to.have.jsonBody();",
+          "});",
+          "",
+          "pm.test('Response has success field', function () {",
+          "    const response = pm.response.json();",
+          "    pm.expect(response).to.have.property('success');",
+          "});",
+          "",
+          "// Test specific status codes",
+          "if (pm.request.method === 'POST') {",
+          "    pm.test('POST request returns 201 or 200', function () {",
+          "        pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+          "    });",
+          "} else if (pm.request.method === 'GET') {",
+          "    pm.test('GET request returns 200', function () {",
+          "        pm.expect(pm.response.code).to.equal(200);",
+          "    });",
+          "} else if (pm.request.method === 'PUT') {",
+          "    pm.test('PUT request returns 200', function () {",
+          "        pm.expect(pm.response.code).to.equal(200);",
+          "    });",
+          "} else if (pm.request.method === 'DELETE') {",
+          "    pm.test('DELETE request returns 204', function () {",
+          "        pm.expect(pm.response.code).to.equal(204);",
+          "    });",
+          "}",
+          "",
+          "// Test error responses",
+          "if (pm.response.code >= 400) {",
+          "    pm.test('Error response has required fields', function () {",
+          "        const response = pm.response.json();",
+          "        pm.expect(response).to.have.property('error');",
+          "        pm.expect(response).to.have.property('message');",
+          "        pm.expect(response).to.have.property('timestamp');",
+          "    });",
+          "}",
+          "",
+          "// Test success responses",
+          "if (pm.response.code < 400) {",
+          "    pm.test('Success response has data field', function () {",
+          "        const response = pm.response.json();",
+          "        pm.expect(response).to.have.property('data');",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ]
+}

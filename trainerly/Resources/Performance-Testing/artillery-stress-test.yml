@@ -1,0 +1,116 @@
+config:
+  target: 'https://api.trainerly.eu/v1'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 50
+      name: "Normal load"
+    - duration: 60
+      arrivalRate: 100
+      name: "High load"
+    - duration: 120
+      arrivalRate: 200
+      name: "Stress test"
+    - duration: 60
+      arrivalRate: 500
+      name: "Breaking point"
+  
+  processor: "./performance-processor.js"
+  
+  variables:
+    userId: "test-user-123"
+    apiToken: "{{ $processEnvironment.API_TOKEN }}"
+  
+  defaults:
+    headers:
+      Authorization: "Bearer {{ apiToken }}"
+      Content-Type: "application/json"
+      X-API-Version: "v1"
+
+scenarios:
+  - name: "Complete Workout Session"
+    weight: 40
+    flow:
+      - post:
+          url: "/auth/login"
+          json:
+            email: "{{ $randomEmail() }}"
+            password: "{{ $randomString() }}"
+          capture:
+            json: "$.data.accessToken"
+            as: "authToken"
+      
+      - get:
+          url: "/workouts/today"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - post:
+          url: "/workouts/start"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            workoutId: "{{ $randomUUID() }}"
+      
+      - loop:
+          count: 10
+          actions:
+            - post:
+                url: "/workouts/progress"
+                headers:
+                  Authorization: "Bearer {{ authToken }}"
+                json:
+                  exerciseId: "{{ $randomUUID() }}"
+                  reps: "{{ $randomNumber(5, 20) }}"
+            - think: 2
+
+  - name: "AI Workout Generation"
+    weight: 30
+    flow:
+      - post:
+          url: "/workouts/generate"
+          json:
+            userId: "{{ userId }}"
+            workoutType: "{{ $randomElement(['strength', 'cardio', 'yoga', 'hiit']) }}"
+            duration: "{{ $randomNumber(15, 120) }}"
+            difficulty: "{{ $randomElement(['beginner', 'intermediate', 'advanced']) }}"
+            equipment: ["dumbbells", "bench"]
+            targetMuscles: ["chest", "shoulders"]
+            energyLevel: "{{ $randomNumber(1, 10) }}"
+            timeOfDay: "{{ $randomElement(['morning', 'afternoon', 'evening']) }}"
+            location: "{{ $randomElement(['gym', 'home', 'outdoor']) }}"
+      
+      - think: 1
+
+  - name: "AI Coach Interaction"
+    weight: 20
+    flow:
+      - post:
+          url: "/ai/coach"
+          json:
+            userId: "{{ userId }}"
+            message: "{{ $randomElement(['I need workout advice', 'How can I improve my form?', 'What should I eat before working out?', 'I feel tired today, should I still work out?']) }}"
+            context:
+              mood: "{{ $randomElement(['energetic', 'tired', 'motivated']) }}"
+              energyLevel: "{{ $randomNumber(1, 10) }}"
+      
+      - think: 2
+
+  - name: "Health Data Sync"
+    weight: 10
+    flow:
+      - post:
+          url: "/health/sync"
+          json:
+            userId: "{{ userId }}"
+            data:
+              steps: "{{ $randomNumber(1000, 15000) }}"
+              calories: "{{ $randomNumber(200, 800) }}"
+              heartRate: "{{ $randomNumber(60, 120) }}"
+              sleepHours: "{{ $randomNumber(6, 10) }}"
+              weight: "{{ $randomNumber(60, 100) }}"
+              timestamp: "{{ $isoTimestamp() }}"
+      
+      - think: 1

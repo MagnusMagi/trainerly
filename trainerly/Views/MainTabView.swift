@@ -50,13 +50,157 @@ struct MainTabView: View {
                 }
                 .tag(Tab.progress)
             
-            // Gamification Tab
-            GamificationDashboardView()
+                               // Gamification Tab
+                   GamificationDashboardView()
+                       .tabItem {
+                           Image(systemName: "trophy.fill")
+                           Text("Gamification")
+                       }
+                       .tag(Tab.gamification)
+                   
+                               // Advanced Analytics Tab
+            AdvancedAnalyticsDashboardView()
                 .tabItem {
-                    Image(systemName: "trophy.fill")
-                    Text("Gamification")
+                    Image(systemName: "chart.bar.xaxis")
+                    Text("Analytics")
                 }
-                .tag(Tab.gamification)
+                .tag(Tab.analytics)
+            
+            // ML Integration Tab
+            MLIntegrationDashboardView()
+                .tabItem {
+                    Image(systemName: "cpu")
+                    Text("ML")
+                }
+                .tag(Tab.mlIntegration)
+            
+            // Health Intelligence Tab
+            HealthIntelligenceDashboardView()
+                .tabItem {
+                    Image(systemName: "heart.text.square")
+                    Text("Health")
+                }
+                .tag(Tab.healthIntelligence)
+            
+            // Performance Tab
+            PerformanceDashboardView()
+                .tabItem {
+                    Image(systemName: "speedometer")
+                    Text("Performance")
+                }
+                .tag(Tab.performance)
+            
+            // Testing Tab
+            TestingDashboardView()
+                .tabItem {
+                    Image(systemName: "checkmark.shield.fill")
+                    Text("Testing")
+                }
+                .tag(Tab.testing)
+            
+            // Real ML Tab
+            RealMLDashboardView()
+                .tabItem {
+                    Image(systemName: "brain.head.profile")
+                    Text("Real ML")
+                }
+                .tag(Tab.realML)
+            
+            // Advanced ML Features Tab
+            AdvancedMLFeaturesDashboardView()
+                .tabItem {
+                    Image(systemName: "sparkles")
+                    Text("Advanced ML")
+                }
+                .tag(Tab.advancedMLFeatures)
+            
+            // AI Model Marketplace Tab
+            AIModelMarketplaceDashboardView()
+                .tabItem {
+                    Image(systemName: "cart.fill")
+                    Text("Marketplace")
+                }
+                .tag(Tab.marketplace)
+            
+            // Quantum ML Tab
+            Text("Quantum ML Dashboard")
+                .tabItem {
+                    Image(systemName: "atom")
+                    Text("Quantum ML")
+                }
+                .tag(Tab.quantumML)
+            
+            // Brain-Computer Interface Tab
+            Text("BCI Dashboard")
+                .tabItem {
+                    Image(systemName: "brain.head.profile")
+                    Text("BCI")
+                }
+                .tag(Tab.bci)
+            
+            // Global AI Hub Tab
+            Text("Global AI Hub")
+                .tabItem {
+                    Image(systemName: "globe")
+                    Text("Global Hub")
+                }
+                .tag(Tab.globalHub)
+            
+            // Quantum-Brain Interface Tab
+            Text("Quantum-Brain Interface")
+                .tabItem {
+                    Image(systemName: "brain.head.profile.fill")
+                    Text("Quantum-Brain")
+                }
+                .tag(Tab.quantumBrain)
+            
+            // Multidimensional Fitness Tab
+            Text("Multidimensional Fitness")
+                .tabItem {
+                    Image(systemName: "cube.transparent")
+                    Text("4D/5D Fitness")
+                }
+                .tag(Tab.multidimensional)
+            
+            // Universal AI Consciousness Tab
+            Text("Universal AI Consciousness")
+                .tabItem {
+                    Image(systemName: "infinity")
+                    Text("Universal AI")
+                }
+                .tag(Tab.universalConsciousness)
+            
+            // Cosmic Fitness Tab
+            Text("Cosmic Fitness")
+                .tabItem {
+                    Image(systemName: "sparkles")
+                    Text("Cosmic")
+                }
+                .tag(Tab.cosmicFitness)
+            
+            // Multiversal Fitness Tab
+            Text("Multiversal Fitness")
+                .tabItem {
+                    Image(systemName: "network")
+                    Text("Multiversal")
+                }
+                .tag(Tab.multiversalFitness)
+            
+            // Deployment & Launch Tab
+            Text("Deployment & Launch")
+                .tabItem {
+                    Image(systemName: "rocket")
+                    Text("Launch")
+                }
+                .tag(Tab.deployment)
+            
+            // Evolution & Growth Tab
+            Text("Evolution & Growth")
+                .tabItem {
+                    Image(systemName: "chart.line.uptrend.xyaxis")
+                    Text("Evolution")
+                }
+                .tag(Tab.evolution)
             
             // Social Tab
             SocialView(coordinator: coordinator.createSocialCoordinator())
@@ -104,15 +248,33 @@ struct MainTabView: View {
 }
 
 // MARK: - Tab Enum
-enum Tab: Int, CaseIterable {
-    case home = 0
-    case workouts = 1
-    case aiCoach = 2
-    case progress = 3
-    case gamification = 4
-    case social = 5
-    case profile = 6
-}
+               enum Tab: Int, CaseIterable {
+            case home = 0
+            case workouts = 1
+            case aiCoach = 2
+            case progress = 3
+            case gamification = 4
+            case analytics = 5
+            case mlIntegration = 6
+            case healthIntelligence = 7
+            case performance = 8
+            case testing = 9
+            case realML = 10
+            case advancedMLFeatures = 11
+            case marketplace = 12
+            case quantumML = 13
+            case bci = 14
+            case globalHub = 15
+            case quantumBrain = 16
+            case multidimensional = 17
+            case universalConsciousness = 18
+            case cosmicFitness = 19
+            case multiversalFitness = 20
+            case deployment = 21
+            case evolution = 22
+            case social = 23
+            case profile = 24
+        }
 
 // MARK: - Placeholder Views (will be implemented next)
 struct HomeView: View {

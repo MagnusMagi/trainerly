@@ -1,0 +1,1324 @@
+openapi: 3.0.3
+info:
+  title: Trainerly API
+  description: |
+    AI-powered fitness platform API that provides personalized workout generation,
+    health tracking, AI coaching, and social features for fitness applications.
+    
+    ## Key Features
+    
+    - **AI Workout Generation**: Personalized workouts based on user data
+    - **Health Integration**: Apple Health and other health platform sync
+    - **Form Analysis**: Computer vision-based exercise form feedback
+    - **Social Features**: Challenges, leaderboards, and community
+    - **Real-time Sync**: Live workout tracking and progress updates
+    
+    ## Getting Started
+    
+    1. Sign up for an API key at [trainerly.eu/developers](https://trainerly.eu/developers)
+    2. Install one of our SDKs or use the REST API directly
+    3. Authenticate with your API key
+    4. Start building amazing fitness experiences!
+    
+    ## SDKs & Libraries
+    
+    - [iOS SDK](https://github.com/trainerly/ios-sdk) - Native iOS integration
+    - [Android SDK](https://github.com/trainerly/android-sdk) - Native Android integration
+    - [JavaScript SDK](https://github.com/trainerly/js-sdk) - Web and Node.js
+    - [Python SDK](https://github.com/trainerly/python-sdk) - Python applications
+    - [Flutter SDK](https://github.com/trainerly/flutter-sdk) - Cross-platform mobile
+    
+    ## Support
+    
+    - **Documentation**: [docs.trainerly.eu](https://docs.trainerly.eu)
+    - **API Status**: [status.trainerly.eu](https://status.trainerly.eu)
+    - **Support**: [support@trainerly.eu](mailto:support@trainerly.eu)
+    - **Discord**: [discord.gg/trainerly](https://discord.gg/trainerly)
+    - **GitHub**: [github.com/trainerly](https://github.com/trainerly)
+  
+  version: 1.0.0
+  contact:
+    name: Trainerly API Support
+    email: api@trainerly.eu
+    url: https://trainerly.eu/developers
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  
+  x-logo:
+    url: https://trainerly.eu/logo.png
+    altText: Trainerly Logo
+  
+  x-tagGroups:
+    - name: Core
+      tags:
+        - Authentication
+        - Users
+        - Workouts
+        - Health
+    - name: AI Features
+      tags:
+        - AI Coach
+        - Form Analysis
+        - Recommendations
+        - Personalization
+    - name: Social
+      tags:
+        - Challenges
+        - Leaderboards
+        - Social Feed
+        - Teams
+    - name: Business
+      tags:
+        - Subscriptions
+        - Payments
+        - Analytics
+        - Webhooks
+
+servers:
+  - url: https://api.trainerly.eu/v1
+    description: Production server
+    x-status: live
+  - url: https://staging-api.trainerly.eu/v1
+    description: Staging server
+    x-status: testing
+  - url: http://localhost:3000/v1
+    description: Development server
+    x-status: development
+
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user with email/password and receive access token
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              basic:
+                summary: Basic login
+                value:
+                  email: "user@example.com"
+                  password: "securepassword123"
+              withMFA:
+                summary: Login with MFA
+                value:
+                  email: "user@example.com"
+                  password: "securepassword123"
+                  mfaCode: "123456"
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many login attempts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: User registration
+      description: Create a new user account
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /workouts:
+    get:
+      tags:
+        - Workouts
+      summary: Get user workouts
+      description: Retrieve a list of workouts for the authenticated user
+      operationId: getUserWorkouts
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of workouts per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: type
+          in: query
+          description: Filter by workout type
+          required: false
+          schema:
+            type: string
+            enum: [strength, cardio, yoga, hiit, pilates, mixed, recovery]
+        - name: difficulty
+          in: query
+          description: Filter by difficulty level
+          required: false
+          schema:
+            type: string
+            enum: [beginner, intermediate, advanced, athlete]
+        - name: completed
+          in: query
+          description: Filter by completion status
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of workouts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Workouts
+      summary: Create workout
+      description: Create a new custom workout
+      operationId: createWorkout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkoutRequest'
+      responses:
+        '201':
+          description: Workout created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /workouts/generate:
+    post:
+      tags:
+        - AI Features
+      summary: Generate AI workout
+      description: Generate an AI-powered personalized workout based on user profile and health data
+      operationId: generateAIWorkout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateWorkoutRequest'
+      responses:
+        '200':
+          description: AI-generated workout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneratedWorkoutResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Insufficient data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /workouts/{workoutId}:
+    get:
+      tags:
+        - Workouts
+      summary: Get workout by ID
+      description: Retrieve detailed information about a specific workout
+      operationId: getWorkoutById
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          description: Unique workout identifier
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Workout details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutResponse'
+        '404':
+          description: Workout not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Workouts
+      summary: Update workout
+      description: Update an existing workout
+      operationId: updateWorkout
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          description: Unique workout identifier
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorkoutRequest'
+      responses:
+        '200':
+          description: Workout updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutResponse'
+        '404':
+          description: Workout not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Workouts
+      summary: Delete workout
+      description: Delete a workout
+      operationId: deleteWorkout
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          description: Unique workout identifier
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Workout deleted
+        '404':
+          description: Workout not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /workouts/{workoutId}/start:
+    post:
+      tags:
+        - Workouts
+      summary: Start workout session
+      description: Begin a workout session and start tracking
+      operationId: startWorkoutSession
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          description: Unique workout identifier
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartWorkoutRequest'
+      responses:
+        '200':
+          description: Workout session started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutSessionResponse'
+        '404':
+          description: Workout not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /health/sync:
+    post:
+      tags:
+        - Health
+      summary: Sync health data
+      description: Synchronize health data from Apple Health or other platforms
+      operationId: syncHealthData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HealthSyncRequest'
+      responses:
+        '200':
+          description: Health data synced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthSyncResponse'
+        '400':
+          description: Invalid health data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ai/coach:
+    post:
+      tags:
+        - AI Features
+      summary: AI coach chat
+      description: Send a message to the AI coach and receive personalized fitness advice
+      operationId: aiCoachChat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AICoachRequest'
+      responses:
+        '200':
+          description: AI coach response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AICoachResponse'
+        '400':
+          description: Invalid message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /challenges:
+    get:
+      tags:
+        - Social
+      summary: Get challenges
+      description: Retrieve available fitness challenges
+      operationId: getChallenges
+      responses:
+        '200':
+          description: List of challenges
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /leaderboards:
+    get:
+      tags:
+        - Social
+      summary: Get leaderboards
+      description: Retrieve fitness leaderboards
+      operationId: getLeaderboards
+      parameters:
+        - name: type
+          in: query
+          description: Leaderboard type
+          required: false
+          schema:
+            type: string
+            enum: [global, friends, company, studio]
+        - name: timeframe
+          in: query
+          description: Time period
+          required: false
+          schema:
+            type: string
+            enum: [daily, weekly, monthly, all_time]
+      responses:
+        '200':
+          description: Leaderboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for API authentication
+    
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for server-to-server communication
+
+  schemas:
+    # Authentication
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          minLength: 8
+          description: User's password
+        mfaCode:
+          type: string
+          description: Multi-factor authentication code
+          pattern: '^[0-9]{6}$'
+
+    LoginResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              description: JWT access token
+            refreshToken:
+              type: string
+              description: JWT refresh token
+            expiresIn:
+              type: integer
+              description: Token expiration time in seconds
+            user:
+              $ref: '#/components/schemas/User'
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          minLength: 8
+          description: User's password
+        firstName:
+          type: string
+          minLength: 1
+          description: User's first name
+        lastName:
+          type: string
+          minLength: 1
+          description: User's last name
+        dateOfBirth:
+          type: string
+          format: date
+          description: User's date of birth
+        fitnessLevel:
+          type: string
+          enum: [beginner, intermediate, advanced, athlete]
+          description: User's fitness level
+
+    RegisterResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            accessToken:
+              type: string
+              description: JWT access token
+
+    # Users
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique user identifier
+        email:
+          type: string
+          format: email
+          description: User's email address
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        dateOfBirth:
+          type: string
+          format: date
+          description: User's date of birth
+        fitnessLevel:
+          type: string
+          enum: [beginner, intermediate, advanced, athlete]
+          description: User's fitness level
+        goals:
+          type: array
+          items:
+            type: string
+          description: User's fitness goals
+        createdAt:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    # Workouts
+    CreateWorkoutRequest:
+      type: object
+      required:
+        - name
+        - type
+        - exercises
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Workout name
+        type:
+          type: string
+          enum: [strength, cardio, yoga, hiit, pilates, mixed, recovery]
+          description: Workout type
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced, athlete]
+          description: Difficulty level
+        duration:
+          type: integer
+          minimum: 15
+          maximum: 180
+          description: Duration in minutes
+        exercises:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exercise'
+          minItems: 1
+          description: List of exercises
+
+    UpdateWorkoutRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Workout name
+        type:
+          type: string
+          enum: [strength, cardio, yoga, hiit, pilates, mixed, recovery]
+          description: Workout type
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced, athlete]
+          description: Difficulty level
+        duration:
+          type: integer
+          minimum: 15
+          maximum: 180
+          description: Duration in minutes
+        exercises:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exercise'
+          description: List of exercises
+
+    GenerateWorkoutRequest:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: User's unique identifier
+        workoutType:
+          type: string
+          enum: [strength, cardio, yoga, hiit, pilates, mixed, recovery]
+          default: strength
+          description: Type of workout to generate
+        duration:
+          type: integer
+          minimum: 15
+          maximum: 120
+          default: 45
+          description: Desired duration in minutes
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced, athlete, auto]
+          default: auto
+          description: Difficulty level or auto for AI determination
+        equipment:
+          type: array
+          items:
+            type: string
+            enum: [bodyweight, dumbbells, barbell, kettlebell, resistance_bands, bench, pullup_bar, cardio_machines]
+          description: Available equipment
+        targetMuscles:
+          type: array
+          items:
+            type: string
+            enum: [chest, back, shoulders, biceps, triceps, abs, glutes, quads, hamstrings, calves]
+          description: Specific muscle groups to target
+        excludeMuscles:
+          type: array
+          items:
+            type: string
+          description: Muscle groups to avoid
+        recentInjuries:
+          type: array
+          items:
+            type: string
+          description: Recent injuries or limitations
+        energyLevel:
+          type: integer
+          minimum: 1
+          maximum: 10
+          default: 5
+          description: Current energy level
+        timeOfDay:
+          type: string
+          enum: [morning, afternoon, evening, night, auto]
+          default: auto
+          description: Preferred time of day
+        weather:
+          type: string
+          default: auto
+          description: Current weather conditions
+        location:
+          type: string
+          enum: [gym, home, outdoor, hotel, office]
+          default: gym
+          description: Workout location
+
+    Exercise:
+      type: object
+      required:
+        - name
+        - sets
+        - reps
+      properties:
+        name:
+          type: string
+          description: Exercise name
+        description:
+          type: string
+          description: Exercise description
+        sets:
+          type: integer
+          minimum: 1
+          description: Number of sets
+        reps:
+          type: integer
+          minimum: 1
+          description: Number of reps per set
+        weight:
+          type: number
+          minimum: 0
+          description: Weight to use (kg)
+        restTime:
+          type: integer
+          minimum: 0
+          description: Rest time between sets (seconds)
+        formTips:
+          type: array
+          items:
+            type: string
+          description: Form improvement tips
+        videoUrl:
+          type: string
+          format: uri
+          description: Instructional video URL
+        targetMuscles:
+          type: array
+          items:
+            type: string
+          description: Muscles worked
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced, athlete]
+          description: Exercise difficulty level
+        equipment:
+          type: array
+          items:
+            type: string
+          description: Required equipment
+
+    Workout:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique workout identifier
+        name:
+          type: string
+          description: Workout name
+        type:
+          type: string
+          enum: [strength, cardio, yoga, hiit, pilates, mixed, recovery]
+          description: Workout type
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced, athlete]
+          description: Difficulty level
+        duration:
+          type: integer
+          description: Duration in minutes
+        estimatedCalories:
+          type: integer
+          description: Estimated calories burned
+        targetMuscles:
+          type: array
+          items:
+            type: string
+          description: Target muscle groups
+        equipment:
+          type: array
+          items:
+            type: string
+          description: Equipment used
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        exercises:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exercise'
+          description: List of exercises
+
+    WorkoutResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Workout'
+
+    WorkoutListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            workouts:
+              type: array
+              items:
+                $ref: '#/components/schemas/Workout'
+              description: List of workouts
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+
+    GeneratedWorkoutResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            workout:
+              allOf:
+                - $ref: '#/components/schemas/Workout'
+                - type: object
+                  properties:
+                    aiReasoning:
+                      type: string
+                      description: Explanation of workout choices
+                    warmup:
+                      $ref: '#/components/schemas/WarmupCooldown'
+                    cooldown:
+                      $ref: '#/components/schemas/WarmupCooldown'
+                    aiInsights:
+                      $ref: '#/components/schemas/AIInsights'
+
+    WarmupCooldown:
+      type: object
+      properties:
+        duration:
+          type: integer
+          description: Duration in minutes
+        exercises:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Exercise name
+              duration:
+                type: integer
+                description: Duration in seconds
+              description:
+                type: string
+                description: Exercise description
+
+    AIInsights:
+      type: object
+      properties:
+        strength:
+          type: string
+          description: Strength progress insight
+        recovery:
+          type: string
+          description: Recovery status insight
+        progression:
+          type: string
+          description: Progression recommendation
+        motivation:
+          type: string
+          description: Motivational insight
+
+    StartWorkoutRequest:
+      type: object
+      properties:
+        location:
+          type: string
+          enum: [gym, home, outdoor, hotel, office]
+          description: Workout location
+        notes:
+          type: string
+          description: Pre-workout notes
+
+    WorkoutSessionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            sessionId:
+              type: string
+              format: uuid
+              description: Workout session identifier
+            startTime:
+              type: string
+              format: date-time
+              description: Session start time
+            workout:
+              $ref: '#/components/schemas/Workout'
+
+    # Health
+    HealthSyncRequest:
+      type: object
+      required:
+        - userId
+        - data
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: User's unique identifier
+        data:
+          type: object
+          properties:
+            steps:
+              type: integer
+              description: Step count
+            calories:
+              type: number
+              description: Calories burned
+            heartRate:
+              type: integer
+              description: Heart rate (BPM)
+            sleepHours:
+              type: number
+              description: Sleep duration (hours)
+            weight:
+              type: number
+              description: Body weight (kg)
+            timestamp:
+              type: string
+              format: date-time
+              description: Data timestamp
+
+    HealthSyncResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            syncedRecords:
+              type: integer
+              description: Number of records synced
+            lastSyncTime:
+              type: string
+              format: date-time
+              description: Last sync timestamp
+
+    # AI Coach
+    AICoachRequest:
+      type: object
+      required:
+        - userId
+        - message
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: User's unique identifier
+        message:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: User's message to AI coach
+        context:
+          type: object
+          properties:
+            currentWorkout:
+              type: string
+              format: uuid
+              description: Current workout ID if applicable
+            mood:
+              type: string
+              enum: [energetic, tired, motivated, stressed, relaxed]
+              description: User's current mood
+            energyLevel:
+              type: integer
+              minimum: 1
+              maximum: 10
+              description: Current energy level
+
+    AICoachResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              description: AI coach response
+            suggestions:
+              type: array
+              items:
+                type: string
+              description: Suggested actions
+            mood:
+              type: string
+              enum: [encouraging, supportive, challenging, calming]
+              description: Response mood
+            followUp:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [question, reminder, challenge]
+                  description: Follow-up type
+                content:
+                  type: string
+                  description: Follow-up content
+
+    # Social
+    Challenge:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Challenge identifier
+        name:
+          type: string
+          description: Challenge name
+        description:
+          type: string
+          description: Challenge description
+        type:
+          type: string
+          enum: [individual, team, company]
+          description: Challenge type
+        goal:
+          type: string
+          description: Challenge goal
+        startDate:
+          type: string
+          format: date-time
+          description: Challenge start date
+        endDate:
+          type: string
+          format: date-time
+          description: Challenge end date
+        participants:
+          type: integer
+          description: Number of participants
+        reward:
+          type: string
+          description: Challenge reward
+
+    ChallengeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            challenges:
+              type: array
+              items:
+                $ref: '#/components/schemas/Challenge'
+              description: List of challenges
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        rank:
+          type: integer
+          description: User's rank
+        userId:
+          type: string
+          format: uuid
+          description: User identifier
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        avatar:
+          type: string
+          format: uri
+          description: User's avatar URL
+        score:
+          type: number
+          description: User's score
+        metric:
+          type: string
+          description: Score metric (e.g., "XP", "workouts", "streak")
+
+    LeaderboardResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [global, friends, company, studio]
+              description: Leaderboard type
+            timeframe:
+              type: string
+              enum: [daily, weekly, monthly, all_time]
+              description: Time period
+            entries:
+              type: array
+              items:
+                $ref: '#/components/schemas/LeaderboardEntry'
+              description: Leaderboard entries
+
+    # Common
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+        limit:
+          type: integer
+          description: Items per page
+        total:
+          type: integer
+          description: Total number of items
+        pages:
+          type: integer
+          description: Total number of pages
+        hasNext:
+          type: boolean
+          description: Whether next page exists
+        hasPrev:
+          type: boolean
+          description: Whether previous page exists
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Human readable error message
+        details:
+          type: object
+          description: Additional error details
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Users
+    description: User management and profiles
+  - name: Workouts
+    description: Workout creation, management, and tracking
+  - name: Health
+    description: Health data synchronization and tracking
+  - name: AI Features
+    description: AI-powered workout generation and coaching
+  - name: Social
+    description: Social features, challenges, and leaderboards
+  - name: Subscriptions
+    description: Subscription and billing management
+  - name: Payments
+    description: Payment processing and management
+  - name: Analytics
+    description: User analytics and insights
+  - name: Webhooks
+    description: Webhook endpoints for real-time updates

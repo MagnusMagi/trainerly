@@ -88,10 +88,10 @@
 		F34ABDFC2E5F94D700DA88C7 = {
 			isa = PBXGroup;
 			children = (
+				F34ABE062E5F94D700DA88C7 /* Products */,
 				F34ABE072E5F94D700DA88C7 /* trainerly */,
 				F34ABE192E5F94D900DA88C7 /* trainerlyTests */,
 				F34ABE232E5F94D900DA88C7 /* trainerlyUITests */,
-				F34ABE062E5F94D700DA88C7 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
